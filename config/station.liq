@@ -24,24 +24,11 @@ radio = request.dynamic(id="dynamic_playlist", get_next_track)
 
 # --- Audio Processing ---
 
-# Step 1: Compress dynamic range to reduce volume differences
-# This makes loud parts quieter and quiet parts louder
+# Compress dynamic range to smooth out volume differences
+# This gently reduces the difference between loud and quiet parts
 radio = compress(radio)
 
-# Step 2: Aggressive normalization for consistent volume
-# target: target RMS level in dB (-16 is good for radio)
-# threshold: maximum gain adjustment in dB
-# window: measurement window in seconds (smaller = faster response)
-radio = normalize(
-  target=-16.,
-  threshold=-40.,
-  window=0.1,
-  gain_max=10.,
-  gain_min=-10.,
-  radio
-)
-
-# Step 3: Limiter to prevent clipping and distortion
+# Limiter to prevent clipping and distortion
 # This ensures no audio goes above -1 dB
 radio = limit(threshold=-1., radio)
 

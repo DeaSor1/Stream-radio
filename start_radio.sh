@@ -19,13 +19,23 @@ if [ ! -d ".venv" ]; then
 fi
 source .venv/bin/activate
 
-# 2. Cleanup existing instances
+# 2. Install/Update Python dependencies
+echo ">>> Checking Python dependencies..."
+if [ -f "requirements.txt" ]; then
+    # Install dependencies quietly, only show output if there are errors
+    pip install -q -r requirements.txt || {
+        echo "⚠️  Warning: Some dependencies failed to install"
+        echo "    Continuing anyway..."
+    }
+fi
+
+# 3. Cleanup existing instances
 echo ">>> Cleaning up old processes..."
 pkill -f "liquidsoap.*config/station.liq" || true
 pkill -f "icecast.*config/icecast.xml" || true
 sleep 1
 
-# 3. Running
+# 4. Running
 echo ">>> Booting servers..."
 mkdir -p logs data music
 
