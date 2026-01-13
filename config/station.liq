@@ -24,10 +24,34 @@ radio = request.dynamic(id="dynamic_playlist", get_next_track)
 
 # --- Audio Processing ---
 
-# Normalization: ensure consistent volume
-# target: target RMS amplitude (dB)
-# window: window size for measurement
-radio = normalize(target=-13., window=5., radio)
+# Step 1: Compress dynamic range to reduce volume differences
+# This makes loud parts quieter and quiet parts louder
+# ratio: compression ratio (3.0 means 3:1 compression)
+# threshold: level above which compression starts (in dB)
+# gain: makeup gain after compression
+radio = compress.exponential(
+  ratio=3.0,
+  threshold=-15.,
+  gain=3.,
+  radio
+)
+
+# Step 2: LUFS-based loudness normalization
+# This is more accurate than simple RMS normalization
+# target: -14 LUFS is the standard for streaming services
+# window: measurement window in seconds
+radio = loudness(
+  target=-14.,
+  window=3.,
+  radio
+)
+
+# Step 3: Limiter to prevent clipping and peaks
+# This ensures no audio goes above 0 dB
+radio = limit(
+  threshold=-1.,
+  radio
+)
 
 # Crossfade logic
 # simple crossfade
