@@ -99,4 +99,4 @@ pkill -f icecast
 ---
 
 **Автор:** DeaSor  
-**Лицензия:** MIT
+**Лицензия:** GPL v3
